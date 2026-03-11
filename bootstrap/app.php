@@ -12,7 +12,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // 1. Payagan ang Render na makapasok (Para gumana ang Login)
         $middleware->trustProxies(at: '*');
+
+        // 2. Default ito ng Inertia at Vue (Huwag buburahin para hindi mag-blank screen)
+        $middleware->web(append: [
+            \App\Http\Middleware\HandleInertiaRequests::class,
+            \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+        ]);
+
+        // 3. Yung ginawa mong Admin Middleware
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
