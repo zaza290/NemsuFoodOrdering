@@ -6,12 +6,37 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\Store;
 use App\Models\MenuItem;
+use App\Models\DailyStoreSale;
+use App\Models\WasteLog;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        // 1. Daily Analytics
+        $today = now()->toDateString();
+        
+        $dailyRevenueAllStores = DailyStoreSale::where('date', $today)->sum('revenue');
+        $dailyWasteAllStores = WasteLog::where('date', $today)->sum('lost_profit');
+        
+        // Detailed daily stats per store
+        $storeDailyStats = Store::with(['dailySales' => function($q) use ($today) {
+                $q->where('date', $today);
+            }, 'wasteLogs' => function($q) use ($today) {
+                $q->where('date', $today);
+            }])
+            ->get()
+            ->map(function($store) {
+                return [
+                    'id' => $store->id,
+                    'name' => $store->name,
+                    'revenue' => $store->dailySales->first()->revenue ?? 0,
+                    'waste' => $store->wasteLogs->sum('lost_profit'),
+                ];
+            });
+
         // Revenue by month (last 6 months)
         $monthlyRevenue = [];
         for ($i = 5; $i >= 0; $i--) {
@@ -40,7 +65,10 @@ class DashboardController extends Controller
                 'total_stores' => Store::count(),
                 'delivered_today' => Order::whereDate('delivered_at', today())->count(),
                 'income_growth_percent' => $growthPercent,
+                'daily_revenue' => $dailyRevenueAllStores,
+                'daily_waste' => $dailyWasteAllStores,
             ],
+            'daily_store_stats' => $storeDailyStats,
             'revenue_trend' => $monthlyRevenue,
             'recent_orders' => Order::with(['user', 'store'])
                 ->latest()->take(10)->get(),

@@ -52,11 +52,11 @@ class OrderController extends Controller
 
                     // Double-check availability and stock after locking
                     if (!$menuItem->isPurchasable()) {
-                        throw new \Exception("The item '{$menuItem->name}' is no longer available, out of stock, or has expired.");
+                        throw new \Exception("The item '{$menuItem->name}' is no longer available or is out of stock.");
                     }
 
-                    if ($menuItem->stock_count < $item['quantity']) {
-                        throw new \Exception("Insufficient stock for '{$menuItem->name}'. Only {$menuItem->stock_count} left.");
+                    if ($menuItem->current_stock < $item['quantity']) {
+                        throw new \Exception("Insufficient stock for '{$menuItem->name}'. Only {$menuItem->current_stock} left.");
                     }
 
                     // 4. Calculate subtotal and track totals

@@ -62,8 +62,8 @@ class PosController extends Controller
             foreach ($request->items as $item) {
                 $menuItem = MenuItem::lockForUpdate()->findOrFail($item['menu_item_id']);
                 
-                if ($menuItem->stock_count < $item['quantity']) {
-                    throw new \Exception("Insufficient stock for '{$menuItem->name}'. Only {$menuItem->stock_count} left.");
+                if ($menuItem->current_stock < $item['quantity']) {
+                    throw new \Exception("Insufficient stock for '{$menuItem->name}'. Only {$menuItem->current_stock} left.");
                 }
 
                 $subtotal = $menuItem->price * $item['quantity'];
@@ -76,7 +76,7 @@ class PosController extends Controller
                 ];
 
                 // Deduct stock for POS walk-in
-                $menuItem->decrement('stock_count', $item['quantity']);
+                $menuItem->decrement('current_stock', $item['quantity']);
             }
 
             $order = Order::create([
@@ -95,6 +95,13 @@ class PosController extends Controller
             ]);
 
             $order->orderItems()->createMany($orderItemsData);
+
+            // Update Daily Store Sales
+            $dailySale = \App\Models\DailyStoreSale::firstOrCreate(
+                ['store_id' => $order->store_id, 'date' => now()->toDateString()],
+                ['revenue' => 0]
+            );
+            $dailySale->increment('revenue', $totalAmount);
 
             Payment::create([
                 'order_id' => $order->id,

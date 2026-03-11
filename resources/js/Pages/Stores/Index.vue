@@ -79,11 +79,11 @@
               <div class="absolute top-4 left-4">
                 <span :class="[
                   'px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest backdrop-blur-md border shadow-lg',
-                  store.is_open
+                  isStoreOpen(store)
                     ? 'bg-emerald-500/80 text-white border-emerald-400/30'
                     : 'bg-rose-500/80 text-white border-rose-400/30'
                 ]">
-                  {{ store.is_open ? 'Open Now' : 'Closed' }}
+                  {{ isStoreOpen(store) ? 'Open Now' : 'Closed' }}
                 </span>
               </div>
             </div>
@@ -100,6 +100,10 @@
                 </div>
               </div>
 
+              <p class="text-sm font-medium text-slate-500 line-clamp-2 mb-8 leading-relaxed">
+                {{ store.description || 'Quality food and quick service at NEMSU.' }}
+              </p>
+
               <!-- Tags / Featured Items -->
               <div class="flex flex-wrap gap-2 mb-8">
                 <template v-for="item in (store.menu_items || []).slice(0, 3)" :key="item.id">
@@ -114,13 +118,12 @@
 
               <!-- Action Footer -->
               <div class="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
-                <div class="flex -space-x-2">
-                  <div v-for="i in 3" :key="i" class="w-8 h-8 rounded-full border-2 border-white bg-slate-200 overflow-hidden shadow-sm">
-                    <img :src="`https://i.pravatar.cc/100?u=${store.id}${i}`" alt="" class="w-full h-full object-cover opacity-80" />
-                  </div>
+                <div class="flex flex-col">
+                  <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Selections</span>
+                  <span class="text-sm font-bold text-slate-900">{{ store.menu_items?.length || 0 }} Items</span>
                 </div>
                 <div class="flex items-center gap-2 font-black text-blue-600 group-hover:gap-4 transition-all duration-300">
-                  <span class="text-sm uppercase tracking-widest">Explore Menu</span>
+                  <span class="text-sm uppercase tracking-widest">View Menu</span>
                   <span class="text-xl">→</span>
                 </div>
               </div>
@@ -163,6 +166,10 @@ function storeImageSrc(store) {
     return '/storage/' + String(store.image).replace(/^[\\/]+/, '')
   }
   return DEFAULT_STORE_IMAGE
+}
+
+function isStoreOpen(store) {
+  return store.is_open === 1 || store.is_open === true
 }
 
 function formatRating(val) {

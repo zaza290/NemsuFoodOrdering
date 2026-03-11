@@ -15,6 +15,8 @@ class Store extends Model
     public function menuItems() { return $this->hasMany(MenuItem::class); }
     public function orders() { return $this->hasMany(Order::class); }
     public function ratings() { return $this->hasMany(Rating::class); }
+    public function dailySales() { return $this->hasMany(DailyStoreSale::class); }
+    public function wasteLogs() { return $this->hasMany(WasteLog::class); }
 
     public function getAverageRatingAttribute()
     {

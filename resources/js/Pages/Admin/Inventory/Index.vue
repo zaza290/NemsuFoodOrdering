@@ -67,12 +67,12 @@
         </div>
       </div>
 
-      <!-- Expiration Tracker -->
+      <!-- Low Stock Tracker -->
       <div class="panel expiration-tracker bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 mb-12 shadow-3d">
         <div class="panel-header border-slate-100 dark:border-slate-700">
           <div class="flex flex-col">
-            <h3 class="panel-title text-slate-900 dark:text-white">🗓️ Expiration Tracker</h3>
-            <p class="panel-sub text-slate-500 dark:text-slate-400">Soonest expiring items across all stores</p>
+            <h3 class="panel-title text-slate-900 dark:text-white">📉 Low Stock Tracker</h3>
+            <p class="panel-sub text-slate-500 dark:text-slate-400">Items with less than 20% of target stock remaining</p>
           </div>
         </div>
         <div class="table-wrap">
@@ -81,27 +81,23 @@
               <tr>
                 <th class="text-slate-500 dark:text-slate-400">Item</th>
                 <th class="text-slate-500 dark:text-slate-400">Store</th>
-                <th class="text-slate-500 dark:text-slate-400">Expiration Date</th>
-                <th class="text-slate-500 dark:text-slate-400">Days Left</th>
+                <th class="text-slate-500 dark:text-slate-400">Current Stock</th>
+                <th class="text-slate-500 dark:text-slate-400">Target Stock</th>
                 <th class="text-slate-500 dark:text-slate-400">Status</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-              <tr v-for="item in expiringItems" :key="`exp-${item.id}`" class="text-slate-700 dark:text-slate-200">
+              <tr v-for="item in lowStockItems" :key="`low-${item.id}`" class="text-slate-700 dark:text-slate-200">
                 <td><strong>{{ item.name }}</strong></td>
                 <td>{{ item.store ? item.store.name : 'N/A' }}</td>
-                <td class="font-medium">{{ formatDate(item.expiration_date) }}</td>
-                <td :class="['font-black', getExpirationClass(item.expiration_date)]">
-                  {{ getDaysLeft(item.expiration_date) }}
-                </td>
+                <td class="font-black text-rose-500">{{ item.current_stock }}</td>
+                <td class="font-medium text-slate-400">{{ item.daily_target_stock }}</td>
                 <td>
-                  <span :class="['status-badge', getExpirationBadgeClass(item.expiration_date)]">
-                    {{ getExpirationLabel(item.expiration_date) }}
-                  </span>
+                  <span class="status-badge danger">LOW STOCK</span>
                 </td>
               </tr>
-              <tr v-if="!expiringItems || expiringItems.length === 0">
-                <td colspan="5" class="no-data text-slate-400 dark:text-slate-500">No expiring items tracked</td>
+              <tr v-if="!lowStockItems || lowStockItems.length === 0">
+                <td colspan="5" class="no-data text-slate-400 dark:text-slate-500">No low stock items tracked</td>
               </tr>
             </tbody>
           </table>
@@ -112,8 +108,8 @@
       <div class="panel bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700/50 shadow-premium rounded-[2.5rem] overflow-hidden">
         <div class="panel-header border-slate-100 dark:border-slate-700 p-8 flex flex-col sm:flex-row gap-6">
           <div class="flex-1">
-            <h3 class="panel-title text-2xl font-black text-slate-900 dark:text-white">Items · Stocks & Expiration</h3>
-            <p class="text-sm font-medium text-slate-400 mt-1 uppercase tracking-wider">Directly edit inventory values below</p>
+            <h3 class="panel-title text-2xl font-black text-slate-900 dark:text-white">Daily Target & Current Stocks</h3>
+            <p class="text-sm font-medium text-slate-400 mt-1 uppercase tracking-wider">Manage daily inventory targets and current levels</p>
           </div>
           <button
             @click="saveAll"
@@ -144,8 +140,8 @@
               <tr>
                 <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Store</th>
                 <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Item</th>
-                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 num">Stock</th>
-                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Expiration</th>
+                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 num">Current Stock</th>
+                <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 num">Target Stock</th>
                 <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Availability</th>
                 <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 num">Actions</th>
               </tr>
@@ -168,18 +164,18 @@
                   </div>
                 </td>
                 <td class="px-8 py-6 num">
-                  <input v-model.number="m.stock_count" type="number" min="0" class="cell-input max-w-[100px] ml-auto bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 focus:ring-4 focus:ring-blue-500/10 rounded-xl font-bold text-center" />
+                  <input v-model.number="m.current_stock" type="number" min="0" class="cell-input max-w-[100px] ml-auto bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 focus:ring-4 focus:ring-blue-500/10 rounded-xl font-bold text-center" />
                 </td>
-                <td class="px-8 py-6">
-                  <input v-model="m.expiration_date" type="date" class="cell-input bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-sm font-bold" />
+                <td class="px-8 py-6 num">
+                  <input v-model.number="m.daily_target_stock" type="number" min="1" class="cell-input max-w-[100px] ml-auto bg-white dark:bg-slate-900 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700 focus:ring-4 focus:ring-blue-500/10 rounded-xl font-bold text-center" />
                 </td>
                 <td class="px-8 py-6">
                   <div class="availability-cell">
-                    <select v-model="m.is_available" class="cell-input bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-sm font-bold" :class="{ 'text-rose-500 border-rose-200 dark:border-rose-900/50': m.stock_count <= 0 }">
+                    <select v-model="m.is_available" class="cell-input bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-slate-200 dark:border-slate-700 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-sm font-bold" :class="{ 'text-rose-500 border-rose-200 dark:border-rose-900/50': m.current_stock <= 0 }">
                       <option :value="true">Available</option>
                       <option :value="false">Unavailable</option>
                     </select>
-                    <span v-if="m.stock_count <= 0" class="stock-warning text-[9px] font-black text-rose-500 tracking-tighter mt-1">Sold Out</span>
+                    <span v-if="m.current_stock <= 0" class="stock-warning text-[9px] font-black text-rose-500 tracking-tighter mt-1">Sold Out</span>
                   </div>
                 </td>
                 <td class="px-8 py-6 num">
@@ -210,7 +206,7 @@ import { ref, computed, watch } from 'vue'
 const props = defineProps({
   stores: Array,
   overall: Object,
-  expiringItems: Array,
+  lowStockItems: Array,
 })
 
 const search = ref('')
@@ -223,43 +219,6 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-const getDaysLeft = (date) => {
-  if (!date) return 'N/A'
-  const diffTime = new Date(date) - new Date()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  if (diffDays < 0) return 'Expired'
-  if (diffDays === 0) return 'Today'
-  return `${diffDays} days`
-}
-
-const getExpirationClass = (date) => {
-  if (!date) return ''
-  const diffTime = new Date(date) - new Date()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  if (diffDays < 3) return 'text-red'
-  if (diffDays < 7) return 'text-orange'
-  return 'text-green'
-}
-
-const getExpirationBadgeClass = (date) => {
-  if (!date) return 'neutral'
-  const diffTime = new Date(date) - new Date()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  if (diffDays < 3) return 'danger'
-  if (diffDays < 7) return 'warning'
-  return 'success'
-}
-
-const getExpirationLabel = (date) => {
-  if (!date) return 'N/A'
-  const diffTime = new Date(date) - new Date()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  if (diffDays < 0) return 'EXPIRED'
-  if (diffDays < 3) return 'URGENT'
-  if (diffDays < 7) return 'SOON'
-  return 'SAFE'
-}
-
 const bulkForm = useForm({
   items: []
 })
@@ -268,8 +227,8 @@ watch(() => props.stores, (newStores) => {
   const flat = (newStores || []).flatMap(s => (s.menu_items || []).map(m => ({
     id: m.id,
     name: m.name,
-    stock_count: m.stock_count ?? 0,
-    expiration_date: m.expiration_date || '',
+    current_stock: m.current_stock ?? 0,
+    daily_target_stock: m.daily_target_stock ?? 50,
     is_available: m.is_available,
     store_id: s.id,
     store_name: s.name,
@@ -351,8 +310,8 @@ function foodImageSrc(item) {
 const save = (m) => {
   router.patch(`/admin/inventory/menu-items/${m.id}`, {
     menu_id: m.id,
-    stock_count: m.stock_count ?? 0,
-    expiration_date: m.expiration_date || null,
+    current_stock: m.current_stock ?? 0,
+    daily_target_stock: m.daily_target_stock ?? 50,
     is_available: !!m.is_available,
   }, {
     preserveScroll: true,
@@ -363,9 +322,9 @@ const save = (m) => {
 const saveAll = () => {
   bulkForm.setData('items', items.value.map(i => ({
     id: i.id,
-    stock_count: i.stock_count,
-    is_available: i.is_available,
-    expiration_date: i.expiration_date || null
+    current_stock: i.current_stock,
+    daily_target_stock: i.daily_target_stock,
+    is_available: i.is_available
   })))
 
   bulkForm.post(route('admin.inventory.bulk-update'), {

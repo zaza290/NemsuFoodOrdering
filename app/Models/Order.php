@@ -35,17 +35,25 @@ class Order extends Model
             foreach ($this->orderItems as $item) {
                 $menuItem = MenuItem::lockForUpdate()->find($item->menu_item_id);
 
-                if (!$menuItem || $menuItem->stock_count < $item->quantity) {
+                if (!$menuItem || $menuItem->current_stock < $item->quantity) {
                     throw new \Exception("Cannot finalize payment. '{$menuItem->name}' is out of stock.");
                 }
 
-                // Deduct stock (if not already deducted during reservation)
-                // Note: In our current setup, we'll trigger the deduction here as requested.
-                $menuItem->decrement('stock_count', $item->quantity);
+                // Deduct current_stock
+                $menuItem->decrement('current_stock', $item->quantity);
             }
 
             $this->update(['payment_status' => 'paid']);
-            $this->payment()->update(['status' => 'verified']);
+            if ($this->payment) {
+                $this->payment()->update(['status' => 'verified']);
+            }
+
+            // Update Daily Store Sales
+            $dailySale = DailyStoreSale::firstOrCreate(
+                ['store_id' => $this->store_id, 'date' => now()->toDateString()],
+                ['revenue' => 0]
+            );
+            $dailySale->increment('revenue', $this->total_amount);
         });
     }
 

@@ -85,7 +85,27 @@
 
         <!-- Recent Activity / Top Stores -->
         <div class="lg:col-span-4 space-y-8">
-          <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight px-6">Top Performing Stores</h3>
+          <div class="flex items-center justify-between px-6">
+            <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Daily Store Performance</h3>
+          </div>
+          <div class="space-y-4">
+            <div v-for="store in daily_store_stats" :key="store.id"
+              class="p-6 bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-premium border border-slate-100 dark:border-slate-700/50 flex items-center gap-6 group hover:border-blue-500/30 dark:hover:border-blue-500/50 transition-all duration-500 hover:shadow-2xl hover:-translate-x-2">
+              <div class="flex-1 min-w-0">
+                <div class="text-base font-black text-slate-900 dark:text-white truncate tracking-tight mb-2">{{ store.name }}</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-500/10 rounded-lg">
+                    <span class="text-[11px] font-black text-emerald-700 dark:text-emerald-400">Revenue: ₱{{ formatAmount(store.revenue) }}</span>
+                  </div>
+                  <div v-if="store.waste > 0" class="flex items-center gap-1.5 px-3 py-1 bg-rose-50 dark:bg-rose-500/10 rounded-lg">
+                    <span class="text-[11px] font-black text-rose-700 dark:text-rose-400">Waste: ₱{{ formatAmount(store.waste) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight px-6 pt-4">Top Performing Stores</h3>
           <div class="space-y-4">
             <div v-for="store in top_stores" :key="store.id"
               class="p-6 bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-premium border border-slate-100 dark:border-slate-700/50 flex items-center gap-6 group hover:border-blue-500/30 dark:hover:border-blue-500/50 transition-all duration-500 hover:shadow-2xl hover:-translate-x-2">
@@ -123,37 +143,38 @@ import { computed } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 
-const props = defineProps({
+  const props = defineProps({
   stats: Object,
   revenue_trend: Array,
   recent_orders: Array,
   top_stores: Array,
+  daily_store_stats: Array,
 })
 
 const statCards = computed(() => [
+  {
+    label: 'Daily Revenue',
+    value: '₱' + formatRevenue(props.stats.daily_revenue),
+    icon: '📈',
+    trend: 'Today',
+    colorClass: 'bg-emerald-50 text-emerald-600 shadow-emerald-100',
+    textClass: 'text-emerald-500'
+  },
+  {
+    label: 'Daily Waste',
+    value: '₱' + formatRevenue(props.stats.daily_waste),
+    icon: '📉',
+    trend: 'Today',
+    colorClass: 'bg-rose-50 text-rose-600 shadow-rose-100',
+    textClass: 'text-rose-500'
+  },
   {
     label: 'Total Revenue',
     value: '₱' + formatRevenue(props.stats.total_revenue),
     icon: '💰',
     trend: 'High Yield',
-    colorClass: 'bg-emerald-50 text-emerald-600 shadow-emerald-100',
-    textClass: 'text-emerald-500'
-  },
-  {
-    label: 'Total Orders',
-    value: props.stats.total_orders,
-    icon: '📦',
-    trend: 'Steady',
     colorClass: 'bg-blue-50 text-blue-600 shadow-blue-100',
     textClass: 'text-blue-500'
-  },
-  {
-    label: 'Active Users',
-    value: props.stats.total_users,
-    icon: '👥',
-    trend: 'Growing',
-    colorClass: 'bg-indigo-50 text-indigo-600 shadow-indigo-100',
-    textClass: 'text-indigo-500'
   },
   {
     label: 'Campus Stores',
