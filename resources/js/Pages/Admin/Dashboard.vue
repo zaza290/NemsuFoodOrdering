@@ -184,7 +184,7 @@ const barHeight = (amount) => {
 function storeImageSrc(store) {
   const DEFAULT_STORE_IMAGE = 'https://images.unsplash.com/photo-1555392886-6f5ac0d4c58b?w=400&h=240&fit=crop&q=80'
   if (!store || !store.image) return DEFAULT_STORE_IMAGE
-  if (String(store.image).startsWith('http')) return store.image
+  if (String(store.image).startsWith('http') || String(store.image).startsWith('/images/')) return store.image
   return '/storage/' + String(store.image).replace(/^[\\/]+/, '')
 }
 </script>

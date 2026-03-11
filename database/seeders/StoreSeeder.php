@@ -13,6 +13,7 @@ class StoreSeeder extends Seeder
         $stores = [
             [
                 'name' => 'SISIG REPUBLIC',
+                'image' => '/images/store1.jpg',
                 'menu' => [
                     ['name' => 'Pork Sisig', 'price' => 65],
                     ['name' => 'Fried Chicken', 'price' => 55],
@@ -24,6 +25,7 @@ class StoreSeeder extends Seeder
             ],
             [
                 'name' => "TAG'Z FRUIT",
+                'image' => '/images/store2.jpg',
                 'menu' => [
                     ['name' => 'Slice Mangga', 'price' => 25],
                     ['name' => 'Slice Pinya', 'price' => 25],
@@ -33,6 +35,7 @@ class StoreSeeder extends Seeder
             ],
             [
                 'name' => "ENJOY KIDDOS' HUB",
+                'image' => '/images/store3.jpg',
                 'menu' => [
                     ['name' => 'Pastil', 'price' => 30],
                     ['name' => 'Fried Chicken', 'price' => 55],
@@ -43,6 +46,7 @@ class StoreSeeder extends Seeder
             ],
             [
                 'name' => "ELMA'S TAKOYAKI & JAPANESE CAKE",
+                'image' => '/images/store4.jpg',
                 'menu' => [
                     ['name' => 'Takoyaki', 'price' => 45],
                     ['name' => 'Japanese Cake', 'price' => 50],
@@ -50,6 +54,7 @@ class StoreSeeder extends Seeder
             ],
             [
                 'name' => 'DOUBLE G STREET FOODS',
+                'image' => '/images/store5.jpg',
                 'menu' => [
                     ['name' => 'Kikiam', 'price' => 15],
                     ['name' => 'Fishball', 'price' => 15],
@@ -57,6 +62,7 @@ class StoreSeeder extends Seeder
             ],
             [
                 'name' => 'IL RUTTO',
+                'image' => '/images/store6.jpg',
                 'menu' => [
                     ['name' => 'Soft Serve Ice Cream', 'price' => 40],
                     ['name' => 'Snacks', 'price' => 30],
@@ -65,12 +71,14 @@ class StoreSeeder extends Seeder
             ],
             [
                 'name' => 'SHAWARMA',
+                'image' => '/images/store7.jpg',
                 'menu' => [
                     ['name' => 'Shawarma', 'price' => 50],
                 ],
             ],
             [
                 'name' => 'TUHOG CORNER',
+                'image' => '/images/store8.jpg',
                 'menu' => [
                     ['name' => 'Fried Isaw', 'price' => 15],
                     ['name' => 'Baga', 'price' => 15],
@@ -81,18 +89,21 @@ class StoreSeeder extends Seeder
             ],
             [
                 'name' => 'JUCYMAE PURE/FRESH BUKO JUICE',
+                'image' => '/images/store9.jpg',
                 'menu' => [
                     ['name' => 'Buko Juice', 'price' => 35],
                 ],
             ],
             [
                 'name' => 'FRESH FRUIT SALAD & SHAKE',
+                'image' => '/images/store10.jpg',
                 'menu' => [
                     ['name' => 'Fruit Shake', 'price' => 45],
                 ],
             ],
             [
                 'name' => "JAC N' JELL FOOD HOUSE",
+                'image' => '/images/store11.jpg',
                 'menu' => [
                     ['name' => 'Siomai Rice with Bagoong', 'price' => 55],
                     ['name' => 'Lemonade Juice', 'price' => 30],
@@ -101,6 +112,7 @@ class StoreSeeder extends Seeder
             ],
             [
                 'name' => 'SWEET CORNER',
+                'image' => '/images/store12.jpg',
                 'menu' => [
                     ['name' => 'Mais Con Yellow', 'price' => 35],
                     ['name' => 'Sweet Corn Pudding and Cakes', 'price' => 40],
@@ -115,6 +127,7 @@ class StoreSeeder extends Seeder
                 'name' => $storeData['name'],
                 'slug' => Str::slug($storeData['name']),
                 'description' => 'Welcome to ' . $storeData['name'],
+                'image' => $storeData['image'] ?? '/images/store' . rand(1, 12) . '.jpg',
                 'is_open' => true,
             ]);
 

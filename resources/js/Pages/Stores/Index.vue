@@ -66,14 +66,14 @@
             class="group relative flex flex-col bg-white rounded-[2.5rem] overflow-hidden shadow-3d ring-1 ring-slate-200/50 hover:ring-blue-500/20 transition-all duration-500"
           >
             <!-- Card Image Container -->
-            <div class="img-container h-56 relative">
+            <div class="img-container h-56 relative overflow-hidden">
               <img
                 :src="storeImageSrc(store)"
                 :alt="store.name"
-                class="img-cover"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 @error="(e) => e.target.src = imageFallback"
               />
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
 
               <!-- Floating Badge -->
               <div class="absolute top-4 left-4">
@@ -159,7 +159,7 @@ const imageFallback = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="ht
 function storeImageSrc(store) {
   if (!store) return DEFAULT_STORE_IMAGE
   if (store.image) {
-    if (String(store.image).startsWith('http')) return store.image
+    if (String(store.image).startsWith('http') || String(store.image).startsWith('/images/')) return store.image
     return '/storage/' + String(store.image).replace(/^[\\/]+/, '')
   }
   return DEFAULT_STORE_IMAGE

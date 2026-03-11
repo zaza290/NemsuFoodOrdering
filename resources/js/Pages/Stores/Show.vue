@@ -386,7 +386,7 @@ const DEFAULT_STORE_IMAGE = 'https://images.unsplash.com/photo-1555392886-6f5ac0
 function storeImageSrc(store) {
   if (!store) return DEFAULT_STORE_IMAGE
   if (store.image) {
-    if (String(store.image).startsWith('http')) return store.image
+    if (String(store.image).startsWith('http') || String(store.image).startsWith('/images/')) return store.image
     return '/storage/' + String(store.image).replace(/^[\\/]+/, '')
   }
   return DEFAULT_STORE_IMAGE
