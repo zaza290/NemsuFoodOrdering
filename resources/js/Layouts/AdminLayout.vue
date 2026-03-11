@@ -144,22 +144,27 @@ onMounted(() => {
   }
   updateDarkMode()
 
-  window.Echo.private('admin.orders')
-    .listen('.order.updated', (e) => {
-      // Refresh the page data for admin
-      router.reload({ only: ['orders', 'recent_walk_in', 'stats'] })
-      console.log('Admin: Order status updated', e.order)
-    })
-    .listen('.order.placed', (e) => {
-      // Refresh data and maybe show a toast notification
-      router.reload({ only: ['orders', 'recent_walk_in', 'stats'] })
-      console.log('Admin: New order placed!', e.order)
-      // Here you could trigger a toast notification library
-    })
+  // Safety check for Laravel Echo
+  if (window.Echo) {
+    window.Echo.private('admin.orders')
+      .listen('.order.updated', (e) => {
+        // Refresh the page data for admin
+        router.reload({ only: ['orders', 'recent_walk_in', 'stats'] })
+        console.log('Admin: Order status updated', e.order)
+      })
+      .listen('.order.placed', (e) => {
+        // Refresh data and maybe show a toast notification
+        router.reload({ only: ['orders', 'recent_walk_in', 'stats'] })
+        console.log('Admin: New order placed!', e.order)
+        // Here you could trigger a toast notification library
+      })
+  }
 })
 
 onUnmounted(() => {
-  window.Echo.leave('admin.orders')
+  if (window.Echo) {
+    window.Echo.leave('admin.orders')
+  }
 })
 
 const navItems = computed(() => [

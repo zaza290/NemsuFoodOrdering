@@ -135,7 +135,7 @@ onMounted(() => {
   }
   updateDarkMode()
 
-  if (user.value) {
+  if (user.value && window.Echo) {
     window.Echo.private(`orders.${user.value.id}`)
       .listen('.order.updated', (e) => {
         // Refresh the page data if we are on the orders page
@@ -150,7 +150,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (user.value) {
+  if (user.value && window.Echo) {
     window.Echo.leave(`orders.${user.value.id}`)
   }
 })
