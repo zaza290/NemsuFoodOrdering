@@ -1,99 +1,130 @@
 <template>
-  <div class="app-root min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
-    <!-- Top Navbar -->
-    <nav class="sticky top-0 z-50 transition-all duration-300 glass-card dark:bg-slate-800/80 dark:border-slate-700/50 backdrop-blur-md">
-      <div class="container mx-auto px-4 sm:px-6">
+  <div class="app-root min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 pb-20 md:pb-0">
+    <!-- Desktop Top Navbar (Hidden on Mobile) -->
+    <nav class="hidden md:block sticky top-0 z-50 transition-all duration-300 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-700/50">
+      <div class="container mx-auto px-6">
         <div class="flex items-center justify-between h-20">
           <Link :href="route('stores.index')" class="flex items-center gap-3 group">
             <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-300">
               <span class="text-2xl">🍽️</span>
             </div>
-            <div class="hidden sm:block">
-              <div class="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">NEMSU Chow Zone</div>
-              <div class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-1">Premium Delivery</div>
+            <div>
+              <div class="text-xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">NEMSU Chow Zone</div>
+              <div class="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-[0.2em] mt-1">Premium Delivery</div>
             </div>
           </Link>
 
-          <div class="hidden md:flex items-center gap-8">
-            <Link :href="route('stores.index')" class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" :class="{ 'text-blue-600 dark:text-blue-400': $page.url.startsWith('/stores') }">
-              🏪 Stores
-            </Link>
-            <Link :href="route('orders.index')" class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" :class="{ 'text-blue-600 dark:text-blue-400': $page.url.startsWith('/orders') }">
-              📦 My Orders
-            </Link>
-          </div>
+          <div class="flex items-center gap-8">
+            <Link :href="route('stores.index')" class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors" :class="{ 'text-blue-600 dark:text-blue-400': $page.url === '/stores' }">Stores</Link>
+            <Link :href="route('orders.index')" class="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-blue-600 transition-colors" :class="{ 'text-blue-600 dark:text-blue-400': $page.url === '/orders' }">Orders</Link>
 
-          <div class="flex items-center gap-4">
             <button @click="toggleDark" class="w-10 h-10 rounded-xl flex items-center justify-center text-xl transition-all hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-yellow-400">
               {{ isDark ? '☀️' : '🌙' }}
             </button>
 
-            <div v-if="user" class="flex items-center gap-4">
-              <!-- Quick Logout Button -->
-              <Link
-                :href="route('logout')"
-                method="post"
-                as="button"
-                class="hidden sm:flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-2xl transition-all active:scale-95"
-                title="Logout"
-              >
-                <span>🚪</span> Logout
-              </Link>
+            <div v-if="user" class="relative">
+              <button @click="dropdownOpen = !dropdownOpen" class="flex items-center gap-3 p-1 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-95 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md">
+                  {{ userInitial }}
+                </div>
+                <span class="text-slate-400 text-xs transition-transform duration-300" :class="{ 'rotate-180': dropdownOpen }">▼</span>
+              </button>
 
-              <div class="relative">
-                <button @click="dropdownOpen = !dropdownOpen" class="flex items-center gap-3 p-1.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-95 group">
-                  <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md group-hover:shadow-blue-200 transition-shadow">
-                    {{ userInitial }}
+              <transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 translate-y-4 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="opacity-100 translate-y-0 scale-100" leave-to-class="opacity-0 translate-y-4 scale-95">
+                <div v-if="dropdownOpen" class="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 overflow-hidden py-2 z-50">
+                  <div class="px-5 py-4 border-b border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">
+                    <div class="text-sm font-black text-slate-900 dark:text-white truncate">{{ userName }}</div>
+                    <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ userRole || 'Member' }}</div>
                   </div>
-                  <div class="hidden sm:block text-left mr-1">
-                    <div class="text-sm font-bold text-slate-900 dark:text-white">{{ userFirstName }}</div>
-                    <div class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter">{{ userRole || 'Member' }}</div>
+                  <div class="p-2 space-y-1">
+                    <Link v-if="isAdmin" :href="route('admin.dashboard')" class="flex items-center gap-3 px-3 py-2.5 text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 rounded-xl transition-colors">
+                      <span>📊</span> Admin Dashboard
+                    </Link>
+                    <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full gap-3 px-3 py-2.5 text-xs font-black uppercase tracking-widest text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-xl transition-colors">
+                      <span>🚪</span> Log out
+                    </Link>
                   </div>
-                  <span class="text-slate-400 text-xs transition-transform duration-300" :class="{ 'rotate-180': dropdownOpen }">▼</span>
-                </button>
-
-                <transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0 translate-y-4 scale-95" enter-to-class="opacity-100 translate-y-0 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="opacity-100 translate-y-0 scale-100" leave-to-class="opacity-0 translate-y-4 scale-95">
-                  <div v-if="dropdownOpen" class="absolute right-0 mt-3 w-64 glass-card dark:bg-slate-800 dark:border-slate-700 premium-shadow rounded-3xl overflow-hidden py-2 border-slate-200/50">
-                    <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">
-                      <div class="text-sm font-extrabold text-slate-900 dark:text-white">{{ userName }}</div>
-                      <div class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">{{ userEmail }}</div>
-                    </div>
-                    <div class="p-2 space-y-1">
-                      <Link v-if="isAdmin" :href="route('admin.dashboard')" class="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-colors">
-                        <span class="text-lg">📊</span> Admin Dashboard
-                      </Link>
-                      <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full gap-3 px-3 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors">
-                        <span class="text-lg">🚪</span> Log out
-                      </Link>
-                    </div>
-                  </div>
-                </transition>
-              </div>
+                </div>
+              </transition>
             </div>
           </div>
         </div>
       </div>
     </nav>
 
-    <!-- Overlay to close dropdown -->
-    <div v-if="dropdownOpen" class="fixed inset-0 z-40 bg-slate-900/5 backdrop-blur-[2px]" @click="dropdownOpen = false"></div>
+    <!-- Mobile Top Header (Sticky) -->
+    <header class="md:hidden sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800 px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🍽️</span>
+        <span class="text-lg font-black tracking-tighter text-slate-900 dark:text-white">Chow Zone</span>
+      </div>
+      <button @click="toggleDark" class="w-10 h-10 rounded-xl flex items-center justify-center text-lg bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-yellow-400">
+        {{ isDark ? '☀️' : '🌙' }}
+      </button>
+    </header>
 
-    <!-- Flash Messages -->
-    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[60] w-full max-w-md px-4 space-y-3 pointer-events-none">
-      <transition-group enter-active-class="transition ease-out duration-300" enter-from-class="opacity-0 -translate-y-8 scale-90" enter-to-class="opacity-100 translate-y-0 scale-100" leave-active-class="transition ease-in duration-200" leave-from-class="opacity-100 translate-y-0 scale-100" leave-to-class="opacity-0 -translate-y-8 scale-90">
-        <div v-if="$page.props.flash?.success" key="success" class="pointer-events-auto flex items-center gap-3 px-5 py-4 glass-card border-emerald-100 text-emerald-800 rounded-3xl premium-shadow">
-          <span class="text-xl">✅</span>
-          <p class="text-sm font-extrabold">{{ $page.props.flash.success }}</p>
+    <!-- Mobile Bottom Navigation (Native App Feel) -->
+    <nav class="md:hidden bottom-nav-blur h-20 px-4 flex items-center justify-around">
+      <Link :href="route('stores.index')" class="flex flex-col items-center gap-1 min-w-[64px] transition-all active:scale-90" :class="route().current('stores.*') ? 'text-blue-600' : 'text-slate-400'">
+        <span class="text-2xl">{{ route().current('stores.*') ? '🏠' : '🏚️' }}</span>
+        <span class="text-[10px] font-black uppercase tracking-widest">Home</span>
+      </Link>
+      <Link :href="route('orders.index')" class="flex flex-col items-center gap-1 min-w-[64px] transition-all active:scale-90" :class="route().current('orders.*') ? 'text-blue-600' : 'text-slate-400'">
+        <span class="text-2xl">📦</span>
+        <span class="text-[10px] font-black uppercase tracking-widest">Orders</span>
+      </Link>
+      <Link :href="route('stores.index')" class="flex flex-col items-center gap-1 min-w-[64px] transition-all active:scale-90 text-slate-400">
+        <span class="text-2xl">🛒</span>
+        <span class="text-[10px] font-black uppercase tracking-widest">Cart</span>
+      </Link>
+      <button @click="dropdownOpen = !dropdownOpen" class="flex flex-col items-center gap-1 min-w-[64px] transition-all active:scale-90 text-slate-400">
+        <span class="text-2xl">👤</span>
+        <span class="text-[10px] font-black uppercase tracking-widest">Profile</span>
+      </button>
+    </nav>
+
+    <!-- Overlay to close dropdown / Mobile Profile -->
+    <div v-if="dropdownOpen" class="fixed inset-0 z-[110] bg-slate-900/60 backdrop-blur-sm md:bg-transparent md:backdrop-blur-0" @click="dropdownOpen = false">
+      <!-- Mobile Profile Sheet -->
+      <div class="md:hidden absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-[3rem] p-8 animate-slide-up" @click.stop>
+        <div class="w-12 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mx-auto mb-8"></div>
+        <div class="flex items-center gap-4 mb-8">
+          <div class="w-16 h-16 rounded-[1.5rem] bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold shadow-xl">
+            {{ userInitial }}
+          </div>
+          <div>
+            <div class="text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ userName }}</div>
+            <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">{{ userRole || 'Member' }}</div>
+          </div>
         </div>
-        <div v-if="$page.props.flash?.error" key="error" class="pointer-events-auto flex items-center gap-3 px-5 py-4 glass-card border-rose-100 text-rose-800 rounded-3xl premium-shadow">
+        <div class="space-y-4">
+          <Link v-if="isAdmin" :href="route('admin.dashboard')" class="flex items-center gap-4 p-5 bg-blue-50 dark:bg-blue-500/10 text-blue-600 rounded-3xl font-black uppercase text-xs tracking-[0.2em]">
+            <span>📊</span> Admin Dashboard
+          </Link>
+          <Link :href="route('logout')" method="post" as="button" class="w-full flex items-center gap-4 p-5 bg-rose-50 dark:bg-rose-500/10 text-rose-600 rounded-3xl font-black uppercase text-xs tracking-[0.2em]">
+            <span>🚪</span> Logout Account
+          </Link>
+        </div>
+        <button @click="dropdownOpen = false" class="w-full mt-6 py-4 text-slate-400 font-black uppercase text-[10px] tracking-widest">Close Menu</button>
+      </div>
+    </div>
+
+    <!-- Flash Messages (Mobile Optimized) -->
+    <div class="fixed top-20 left-1/2 -translate-x-1/2 z-[120] w-full max-w-md px-6 space-y-3 pointer-events-none">
+      <transition-group enter-active-class="transition ease-out duration-300" enter-from-class="opacity-0 -translate-y-8 scale-90" enter-to-class="opacity-100 translate-y-0 scale-100" leave-active-class="transition ease-in duration-200" leave-from-class="opacity-100 translate-y-0 scale-100" leave-to-class="opacity-0 -translate-y-8 scale-90">
+        <div v-if="$page.props.flash?.success" key="success" class="pointer-events-auto flex items-center gap-3 px-6 py-4 bg-emerald-500 text-white rounded-[2rem] shadow-2xl shadow-emerald-500/30">
+          <span class="text-xl">✅</span>
+          <p class="text-sm font-black tracking-tight">{{ $page.props.flash.success }}</p>
+        </div>
+        <div v-if="$page.props.flash?.error" key="error" class="pointer-events-auto flex items-center gap-3 px-6 py-4 bg-rose-500 text-white rounded-[2rem] shadow-2xl shadow-rose-500/30">
           <span class="text-xl">❌</span>
-          <p class="text-sm font-extrabold">{{ $page.props.flash.error }}</p>
+          <p class="text-sm font-black tracking-tight">{{ $page.props.flash.error }}</p>
         </div>
       </transition-group>
     </div>
 
     <!-- Main Content -->
-    <main class="main-content container mx-auto px-4 sm:px-6 py-8">
+    <main class="container mx-auto px-4 sm:px-6 py-6 md:py-10">
       <slot />
     </main>
   </div>
@@ -172,165 +203,31 @@ const isAdmin = computed(() => user.value?.role === 'admin')
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
-* { box-sizing: border-box; }
-
-.app-root { min-height: 100vh; background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
-
-.navbar {
-  background: linear-gradient(90deg, #1e3a5f 0%, #1e40af 100%);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 16px rgba(30, 58, 95, 0.2);
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
-.nav-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  gap: 2rem;
+@keyframes bounce-in {
+  0% { transform: scale(0.9); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
-.nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  text-decoration: none;
-  color: #fff;
-  flex-shrink: 0;
-}
-.nav-brand-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: url('https://image2url.com/r2/default/images/1772014557556-c8413775-376d-46f3-ac39-40ae95668b58.jpg') center/cover;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-.brand-name { font-weight: 800; font-size: 1rem; color: #fff; line-height: 1.1; }
-.brand-tag { font-size: 0.65rem; color: rgba(255,255,255,0.8); letter-spacing: 0.05em; text-transform: uppercase; }
-
-.nav-links { display: flex; gap: 0.15rem; flex: 1; }
-.nav-link {
-  color: rgba(255,255,255,0.9);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  transition: background 0.2s, color 0.2s;
-}
-.nav-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
-.nav-link.active { background: rgba(255,255,255,0.2); color: #fff; }
-
-.nav-user { position: relative; margin-left: auto; }
-.user-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 999px;
-  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
-  cursor: pointer;
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-.user-pill:hover { background: rgba(255,255,255,0.2); }
-.user-avatar {
-  width: 30px; height: 30px;
-  background: #f59e0b;
-  color: #1e3a5f;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 0.8rem;
-}
-.user-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chevron { font-size: 0.7rem; opacity: 0.7; }
-
-.user-dropdown {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  background: white;
-  border-radius: 14px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.15);
-  min-width: 220px;
-  overflow: hidden;
-  z-index: 200;
-}
-.dropdown-info { padding: 1rem 1.1rem 0.75rem; }
-.dropdown-name { font-weight: 700; font-size: 0.9rem; color: #111827; }
-.dropdown-email { font-size: 0.75rem; color: #9ca3af; }
-.dropdown-role {
-  display: inline-block;
-  margin-top: 0.35rem;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  background: #d1fae5;
-  color: #065f46;
-  border-radius: 999px;
-  padding: 0.15rem 0.6rem;
-}
-.dropdown-divider { border: none; border-top: 1px solid #f3f4f6; margin: 0; }
-.dropdown-item {
-  display: block;
-  padding: 0.7rem 1.1rem;
-  font-size: 0.875rem;
-  color: #374151;
-  text-decoration: none;
-  font-family: 'DM Sans', sans-serif;
-  cursor: pointer;
-  background: none;
-  border: none;
-  width: 100%;
-  text-align: left;
-  transition: background 0.15s;
-}
-.dropdown-item:hover { background: #f9fafb; }
-.logout-item { color: #ef4444; }
-.logout-item:hover { background: #fef2f2; }
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 99;
+.animate-slide-up {
+  animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.flash {
-  position: fixed;
-  top: 72px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 500;
-  padding: 0.75rem 2rem;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  white-space: nowrap;
+.animate-bounce-in {
+  animation: bounce-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.flash-success { background: #d1fae5; color: #065f46; }
-.flash-error { background: #fee2e2; color: #991b1b; }
 
-.slide-down-enter-active, .slide-down-leave-active { transition: all 0.3s; }
-.slide-down-enter-from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-.slide-down-leave-to { opacity: 0; transform: translateX(-50%) translateY(-10px); }
-
-.main-content { min-height: calc(100vh - 60px); }
-
-@media (max-width: 640px) {
-  .nav-links { display: none; }
-  .user-name { display: none; }
+/* Custom Hide Scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>

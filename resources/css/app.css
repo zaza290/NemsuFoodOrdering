@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,14 +17,29 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-slate-50 text-slate-900 antialiased overflow-x-hidden;
     font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
 @layer components {
   .glass-card {
     @apply bg-white/70 backdrop-blur-lg border border-white/30;
+  }
+
+  /* Premium App-like Cards */
+  .app-card {
+    @apply bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700/50 transition-all duration-300;
+  }
+
+  .app-card:active {
+    @apply scale-[0.98] bg-slate-50 dark:bg-slate-700/50;
+  }
+
+  /* Fixed Bottom Nav Blur */
+  .bottom-nav-blur {
+    @apply fixed bottom-0 left-0 right-0 z-[100] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 pb-safe;
   }
   
   .premium-shadow {
@@ -50,6 +67,11 @@
     @apply -translate-y-0.5;
     box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
   }
+}
+
+/* Safe Area Insets for Mobile */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Custom Utilities for Image Handling */

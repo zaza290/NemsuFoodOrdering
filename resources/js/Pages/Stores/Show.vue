@@ -1,8 +1,8 @@
 <template>
   <AppLayout :title="store.name">
-    <div class="store-page space-y-12 pb-32">
-      <!-- Premium Store Header -->
-      <div class="relative h-[50vh] min-h-[400px] overflow-hidden rounded-[4rem] shadow-2xl group mx-4 mt-4">
+    <div class="store-page space-y-8 md:space-y-12 pb-32">
+      <!-- Premium Store Header - Native App Optimized -->
+      <div class="relative h-[40vh] md:h-[50vh] min-h-[300px] md:min-h-[400px] overflow-hidden md:rounded-[4rem] shadow-2xl group md:mx-4 md:mt-4">
         <div class="absolute inset-0">
           <img
             :src="storeImageSrc(store)"
@@ -13,41 +13,39 @@
           <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
         </div>
 
-        <div class="absolute inset-0 flex flex-col justify-end p-8 sm:p-16">
+        <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-16">
           <div class="container mx-auto">
-            <Link :href="route('stores.index')" class="inline-flex items-center gap-3 px-6 py-3 mb-12 bg-white/10 backdrop-blur-xl border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-white/20 transition-all active:scale-95 group/back">
+            <Link :href="route('stores.index')" class="hidden md:inline-flex items-center gap-3 px-6 py-3 mb-12 bg-white/10 backdrop-blur-xl border border-white/20 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-white/20 transition-all active:scale-95 group/back">
               <span class="group-hover/back:-translate-x-1 transition-transform">←</span> Back to Stores
             </Link>
 
-            <div class="flex flex-col sm:flex-row items-end sm:items-center gap-8">
-              <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-[3rem] bg-white/10 backdrop-blur-2xl border border-white/30 p-2 shadow-2xl shrink-0 overflow-hidden group/logo">
+            <div class="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8">
+              <div class="w-24 h-24 md:w-40 md:h-40 rounded-[2rem] md:rounded-[3rem] bg-white/10 backdrop-blur-2xl border border-white/30 p-1.5 md:p-2 shadow-2xl shrink-0 overflow-hidden">
                 <img
                   :src="storeImageSrc(store)"
                   :alt="store.name"
-                  class="w-full h-full object-cover rounded-[2.5rem] transition-transform duration-700 group-hover/logo:scale-110"
+                  class="w-full h-full object-cover rounded-[1.5rem] md:rounded-[2.5rem]"
                   @error="(e) => e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(store.name)}&background=random&size=256`"
                 />
               </div>
 
-              <div class="flex-1 text-white space-y-4">
-                <div class="flex items-center gap-4">
+              <div class="flex-1 text-white space-y-2 md:space-y-4">
+                <div class="flex items-center gap-3">
                   <span :class="[
-                    'px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.15em] backdrop-blur-md border shadow-2xl transition-all duration-500',
+                    'px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.15em] backdrop-blur-md border shadow-2xl',
                     store.is_open
                       ? 'bg-emerald-500/80 text-white border-emerald-400/30'
                       : 'bg-rose-500/80 text-white border-rose-400/30'
                   ]">
-                    {{ store.is_open ? '● Open Now' : '● Closed' }}
+                    {{ store.is_open ? '● Open' : '● Closed' }}
                   </span>
                 </div>
-                <h1 class="text-5xl sm:text-7xl font-black tracking-tighter mb-4 drop-shadow-2xl">{{ store.name }}</h1>
-                <div class="flex items-center gap-8">
-                  <div class="flex items-center gap-3 px-4 py-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10">
-                    <div class="flex text-amber-400 text-lg">
-                      <span v-for="i in 5" :key="i" :class="['star', { 'text-white/20': i > Math.round(averageRating) }]">★</span>
-                    </div>
-                    <span class="text-xl font-black">{{ averageRating ? parseFloat(averageRating).toFixed(1) : '0.0' }}</span>
-                    <span class="text-xs font-bold text-white/60">({{ totalRatings }} reviews)</span>
+                <h1 class="text-4xl md:text-7xl font-black tracking-tighter drop-shadow-2xl leading-none">{{ store.name }}</h1>
+                <div class="flex items-center gap-4 md:gap-8">
+                  <div class="flex items-center gap-2 md:gap-3 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-xl border border-white/10">
+                    <span class="text-amber-400 text-sm md:text-lg">★</span>
+                    <span class="text-lg md:text-xl font-black">{{ averageRating ? parseFloat(averageRating).toFixed(1) : '0.0' }}</span>
+                    <span class="text-[10px] font-bold text-white/60">({{ totalRatings }} reviews)</span>
                   </div>
                 </div>
               </div>
@@ -57,87 +55,72 @@
       </div>
 
       <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-16">
           <!-- Menu Column -->
-          <div class="lg:col-span-8 space-y-16">
-            <div class="flex items-end justify-between px-6 border-b-2 border-slate-100 dark:border-slate-800 pb-10">
-              <div class="space-y-2">
-                <span class="inline-block px-4 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full">Explore Flavors</span>
-                <h2 class="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">Our Menu</h2>
-              </div>
-              <div class="hidden sm:block text-right">
-                <p class="text-slate-400 dark:text-slate-500 font-black uppercase text-[10px] tracking-[0.25em]">
-                  {{ menuItems.length }} Selections Available
-                </p>
+          <div class="lg:col-span-8 space-y-10 md:space-y-16">
+            <div class="flex items-end justify-between px-2 md:px-6 border-b-2 border-slate-100 dark:border-slate-800 pb-6 md:pb-10">
+              <div class="space-y-1">
+                <span class="inline-block px-3 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[9px] font-black uppercase tracking-[0.2em] rounded-full">Menu</span>
+                <h2 class="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">Explore Flavors</h2>
               </div>
             </div>
 
-            <div v-if="menuItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            <div v-if="menuItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
               <div
                 v-for="item in menuItems"
                 :key="item.id"
-                class="group relative flex flex-col sm:flex-row items-center gap-6 p-6 sm:p-8 bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-premium hover:shadow-2xl border border-slate-100 dark:border-slate-700/50 transition-all duration-500 hover:-translate-y-1"
+                class="group relative flex flex-row items-center gap-4 md:gap-6 p-4 md:p-8 bg-white dark:bg-slate-800 rounded-[2rem] md:rounded-[2.5rem] shadow-sm hover:shadow-xl border border-slate-100 dark:border-slate-700/50 transition-all duration-500"
                 :class="{ 'opacity-60 grayscale cursor-not-allowed': !isPurchasable(item) }"
               >
-                <!-- Item Image - Legend Style -->
-                <div class="w-full sm:w-32 h-40 sm:h-32 shrink-0 rounded-3xl overflow-hidden shadow-lg border-2 border-slate-50 dark:border-slate-700 relative group/img">
+                <!-- Item Image - App Style -->
+                <div class="w-24 h-24 md:w-32 md:h-32 shrink-0 rounded-2xl md:rounded-3xl overflow-hidden shadow-md relative">
                   <img
                     :src="foodImageSrc(item)"
                     :alt="item.name"
                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     loading="lazy"
-                    @error="(e) => e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random&size=256`"
                   />
                   <div v-if="!isPurchasable(item)" class="absolute inset-0 bg-slate-900/60 flex items-center justify-center backdrop-blur-sm">
-                    <span class="text-white text-[9px] font-black uppercase tracking-widest border border-white/20 px-3 py-1.5 rounded-full">{{ getStatusLabel(item) }}</span>
+                    <span class="text-white text-[8px] font-black uppercase tracking-widest border border-white/20 px-2 py-1 rounded-full">{{ getStatusLabel(item) }}</span>
                   </div>
                 </div>
 
-                <!-- Item Info - Organized & Structured -->
-                <div class="flex-1 min-w-0 flex flex-col justify-between h-full space-y-3">
-                  <div class="space-y-1">
-                    <div class="flex justify-between items-start gap-2">
-                      <h3 class="text-xl font-black text-slate-900 dark:text-white truncate tracking-tight group-hover:text-blue-600 transition-colors">{{ item.name }}</h3>
-                      <div class="text-lg font-black text-blue-600 dark:text-blue-400 shrink-0">₱{{ parseFloat(item.price).toFixed(2) }}</div>
-                    </div>
-                    <p v-if="item.description" class="text-xs font-medium text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                <!-- Item Info -->
+                <div class="flex-1 min-w-0 flex flex-col justify-between h-full py-1">
+                  <div>
+                    <h3 class="text-base md:text-xl font-black text-slate-900 dark:text-white truncate tracking-tight mb-0.5">{{ item.name }}</h3>
+                    <p v-if="item.description" class="text-[10px] md:text-xs font-medium text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                       {{ item.description }}
                     </p>
                   </div>
 
-                  <!-- Actions - Touch Friendly & Mobile Optimized -->
-                  <div class="flex items-center justify-between pt-2 border-t border-slate-50 dark:border-slate-700/50">
-                    <div v-if="isPurchasable(item)" class="flex items-center gap-4 w-full">
-                      <div class="flex items-center gap-2 p-1 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 shrink-0">
-                        <button @click="decreaseQty(item)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black shadow-sm hover:bg-rose-500 hover:text-white dark:hover:bg-rose-500 transition-all active:scale-90 disabled:opacity-30" :disabled="getQty(item.id) === 0">
-                          −
-                        </button>
-                        <span class="w-6 text-center text-sm font-black text-slate-900 dark:text-white">{{ getQty(item.id) }}</span>
-                        <button @click="increaseQty(item)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black shadow-sm hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 transition-all active:scale-90 disabled:opacity-30" :disabled="getQty(item.id) >= item.stock_count">
-                          +
-                        </button>
-                      </div>
+                  <div class="flex items-center justify-between mt-3">
+                    <div class="text-base md:text-lg font-black text-blue-600 dark:text-blue-400">₱{{ parseFloat(item.price).toFixed(2) }}</div>
 
-                      <!-- Add to Cart Visual Indicator -->
-                      <div v-if="getQty(item.id) > 0" class="flex-1 text-right">
-                        <span class="inline-flex px-3 py-1.5 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 animate-bounce">
-                          Added!
-                        </span>
-                      </div>
-                      <div v-else-if="item.stock_count < 10" class="flex-1 text-right">
-                        <span class="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest">
-                          🔥 {{ item.stock_count }} Left
-                        </span>
-                      </div>
-                    </div>
-                    <div v-else class="w-full text-center">
-                      <span class="block w-full py-2 bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl border border-slate-100 dark:border-slate-800">
-                        {{ getStatusLabel(item) }}
-                      </span>
+                    <!-- Actions - Optimized for Touch -->
+                    <div v-if="isPurchasable(item)" class="flex items-center gap-2 p-1 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 shrink-0">
+                      <button @click="decreaseQty(item)" class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg md:rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black shadow-sm active:scale-90 disabled:opacity-30" :disabled="getQty(item.id) === 0">
+                        −
+                      </button>
+                      <span class="w-4 md:w-6 text-center text-xs md:text-sm font-black text-slate-900 dark:text-white">{{ getQty(item.id) }}</span>
+                      <button @click="increaseQty(item)" class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg md:rounded-xl bg-blue-600 text-white font-black shadow-sm active:scale-90" :disabled="getQty(item.id) >= item.stock_count">
+                        +
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+
+            <!-- Mobile Sticky View Cart (Visible only on mobile when items in cart) -->
+            <div v-if="cart.length > 0" class="md:hidden fixed bottom-24 left-0 right-0 px-6 z-[90]">
+              <button @click="scrollToCart" class="w-full py-5 bg-blue-600 text-white rounded-[2rem] shadow-2xl shadow-blue-500/40 flex items-center justify-between px-8 animate-bounce-in">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center text-sm font-black">{{ totalItems }}</div>
+                  <span class="text-xs font-black uppercase tracking-widest">View Cart</span>
+                </div>
+                <span class="text-lg font-black">₱{{ total.toFixed(2) }}</span>
+              </button>
             </div>
 
             <!-- Styled Empty State for Menu -->
@@ -180,7 +163,7 @@
           </div>
 
           <!-- Sticky Cart Column -->
-          <div class="lg:col-span-4">
+          <div id="cart-column" class="lg:col-span-4">
             <div class="sticky top-32 space-y-8">
               <div class="bg-white dark:bg-slate-800 rounded-[4rem] p-10 shadow-3d border border-slate-100 dark:border-slate-700/50 relative overflow-hidden group/cart-panel">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 dark:bg-blue-400/5 rounded-full -mr-16 -mt-16 transition-transform duration-1000 group-hover/cart-panel:scale-150"></div>
@@ -373,6 +356,12 @@ const totalItems = computed(() => cart.value.reduce((sum, i) => sum + i.quantity
 const placeOrder = () => {
   form.items = cart.value.map(i => ({ menu_item_id: i.id, quantity: i.quantity }))
   form.post(route('orders.store'), { forceFormData: true })
+}
+
+const cartSection = ref(null)
+const scrollToCart = () => {
+  const el = document.getElementById('cart-column')
+  if (el) el.scrollIntoView({ behavior: 'smooth' })
 }
 
 const onProofSelect = (e) => {
