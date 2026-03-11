@@ -139,8 +139,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { computed, onMounted, onUnmounted } from 'vue'
+import { Link, router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 
   const props = defineProps({
@@ -149,6 +149,23 @@ import AdminLayout from '@/Layouts/AdminLayout.vue'
   recent_orders: Array,
   top_stores: Array,
   daily_store_stats: Array,
+})
+
+let pollingInterval = null
+
+onMounted(() => {
+  // Live Dashboard Polling (Every 10 seconds)
+  pollingInterval = setInterval(() => {
+    router.reload({
+      only: ['stats', 'daily_store_stats', 'recent_orders'],
+      preserveScroll: true,
+      preserveState: true
+    })
+  }, 10000)
+})
+
+onUnmounted(() => {
+  if (pollingInterval) clearInterval(pollingInterval)
 })
 
 const statCards = computed(() => [
@@ -177,12 +194,20 @@ const statCards = computed(() => [
     textClass: 'text-blue-500'
   },
   {
+    label: 'Potential Waste',
+    value: '₱' + formatRevenue(props.stats.live_potential_waste),
+    icon: '⏳',
+    trend: 'Live Unsold',
+    colorClass: 'bg-amber-50 text-amber-600 shadow-amber-100',
+    textClass: 'text-amber-500'
+  },
+  {
     label: 'Campus Stores',
     value: props.stats.total_stores,
     icon: '🏪',
     trend: 'Verified',
-    colorClass: 'bg-amber-50 text-amber-600 shadow-amber-100',
-    textClass: 'text-amber-500'
+    colorClass: 'bg-indigo-50 text-indigo-600 shadow-indigo-100',
+    textClass: 'text-indigo-500'
   },
 ])
 

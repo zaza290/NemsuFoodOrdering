@@ -136,7 +136,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 
@@ -145,6 +145,23 @@ const props = defineProps({ orders: Object })
 const search = ref('')
 const statusFilter = ref('')
 const paymentFilter = ref('')
+
+let pollingInterval = null
+
+onMounted(() => {
+  // Real-time Orders Polling (Every 5 seconds)
+  pollingInterval = setInterval(() => {
+    router.reload({
+      only: ['orders'],
+      preserveScroll: true,
+      preserveState: true
+    })
+  }, 5000)
+})
+
+onUnmounted(() => {
+  if (pollingInterval) clearInterval(pollingInterval)
+})
 
 const filteredOrders = computed(() => {
   let data = props.orders.data || []
@@ -172,13 +189,15 @@ const miniStats = computed(() => {
 
 const updateStatus = (orderId, status) => {
   router.patch(route('admin.orders.status', { order: orderId }), { status }, {
-    preserveScroll: true
+    preserveScroll: true,
+    preserveState: true
   })
 }
 
 const verifyPayment = (orderId) => {
   router.patch(route('admin.orders.verify-payment', { order: orderId }), {}, {
-    preserveScroll: true
+    preserveScroll: true,
+    preserveState: true
   })
 }
 

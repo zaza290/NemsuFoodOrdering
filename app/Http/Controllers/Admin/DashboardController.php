@@ -17,10 +17,13 @@ class DashboardController extends Controller
     {
         // 1. Daily Analytics
         $today = now()->toDateString();
-        
+
         $dailyRevenueAllStores = DailyStoreSale::where('date', $today)->sum('revenue');
         $dailyWasteAllStores = WasteLog::where('date', $today)->sum('lost_profit');
-        
+
+        // 2. Live Potential Waste (Unsold items current stock * price)
+        $livePotentialWaste = MenuItem::sum(DB::raw('current_stock * price'));
+
         // Detailed daily stats per store
         $storeDailyStats = Store::with(['dailySales' => function($q) use ($today) {
                 $q->where('date', $today);
@@ -67,6 +70,7 @@ class DashboardController extends Controller
                 'income_growth_percent' => $growthPercent,
                 'daily_revenue' => $dailyRevenueAllStores,
                 'daily_waste' => $dailyWasteAllStores,
+                'live_potential_waste' => $livePotentialWaste,
             ],
             'daily_store_stats' => $storeDailyStats,
             'revenue_trend' => $monthlyRevenue,
