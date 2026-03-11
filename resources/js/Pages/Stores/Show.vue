@@ -60,24 +60,27 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
           <!-- Menu Column -->
           <div class="lg:col-span-8 space-y-16">
-            <div class="flex items-end justify-between px-4 border-b border-slate-100 dark:border-slate-800 pb-8">
-              <div>
-                <h2 class="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Our Menu</h2>
-                <p class="text-slate-400 dark:text-slate-500 font-black uppercase text-[10px] tracking-[0.25em] mt-3">
-                  {{ menuItems.length }} Flavors Available
+            <div class="flex items-end justify-between px-6 border-b-2 border-slate-100 dark:border-slate-800 pb-10">
+              <div class="space-y-2">
+                <span class="inline-block px-4 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-full">Explore Flavors</span>
+                <h2 class="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">Our Menu</h2>
+              </div>
+              <div class="hidden sm:block text-right">
+                <p class="text-slate-400 dark:text-slate-500 font-black uppercase text-[10px] tracking-[0.25em]">
+                  {{ menuItems.length }} Selections Available
                 </p>
               </div>
             </div>
 
-            <div v-if="menuItems.length > 0" class="grid grid-cols-1 gap-8">
+            <div v-if="menuItems.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
               <div
                 v-for="item in menuItems"
                 :key="item.id"
-                class="group relative flex items-center gap-8 p-8 bg-white dark:bg-slate-800 rounded-[3rem] shadow-premium hover:shadow-2xl border border-slate-100 dark:border-slate-700/50 transition-all duration-500 hover:-translate-y-1"
+                class="group relative flex flex-col sm:flex-row items-center gap-6 p-6 sm:p-8 bg-white dark:bg-slate-800 rounded-[2.5rem] shadow-premium hover:shadow-2xl border border-slate-100 dark:border-slate-700/50 transition-all duration-500 hover:-translate-y-1"
                 :class="{ 'opacity-60 grayscale cursor-not-allowed': !isPurchasable(item) }"
               >
-                <!-- Item Image -->
-                <div class="w-36 h-36 shrink-0 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-slate-50 dark:border-slate-700 relative group/img">
+                <!-- Item Image - Legend Style -->
+                <div class="w-full sm:w-32 h-40 sm:h-32 shrink-0 rounded-3xl overflow-hidden shadow-lg border-2 border-slate-50 dark:border-slate-700 relative group/img">
                   <img
                     :src="foodImageSrc(item)"
                     :alt="item.name"
@@ -86,38 +89,49 @@
                     @error="(e) => e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name)}&background=random&size=256`"
                   />
                   <div v-if="!isPurchasable(item)" class="absolute inset-0 bg-slate-900/60 flex items-center justify-center backdrop-blur-sm">
-                    <span class="text-white text-[10px] font-black uppercase tracking-widest border border-white/20 px-3 py-1.5 rounded-full">{{ getStatusLabel(item) }}</span>
+                    <span class="text-white text-[9px] font-black uppercase tracking-widest border border-white/20 px-3 py-1.5 rounded-full">{{ getStatusLabel(item) }}</span>
                   </div>
                 </div>
 
-                <!-- Item Info -->
-                <div class="flex-1 min-w-0 space-y-4">
-                  <div class="flex justify-between items-start">
-                    <h3 class="text-2xl font-black text-slate-900 dark:text-white truncate tracking-tight">{{ item.name }}</h3>
-                    <div class="text-2xl font-black text-blue-600 dark:text-blue-400 drop-shadow-sm">₱{{ parseFloat(item.price).toFixed(2) }}</div>
+                <!-- Item Info - Organized & Structured -->
+                <div class="flex-1 min-w-0 flex flex-col justify-between h-full space-y-3">
+                  <div class="space-y-1">
+                    <div class="flex justify-between items-start gap-2">
+                      <h3 class="text-xl font-black text-slate-900 dark:text-white truncate tracking-tight group-hover:text-blue-600 transition-colors">{{ item.name }}</h3>
+                      <div class="text-lg font-black text-blue-600 dark:text-blue-400 shrink-0">₱{{ parseFloat(item.price).toFixed(2) }}</div>
+                    </div>
+                    <p v-if="item.description" class="text-xs font-medium text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                      {{ item.description }}
+                    </p>
                   </div>
-                  <p v-if="item.description" class="text-sm font-medium text-slate-500 dark:text-slate-400 line-clamp-2 pr-8 leading-relaxed">
-                    {{ item.description }}
-                  </p>
 
-                  <div class="flex items-center gap-6 pt-2">
-                    <div v-if="isPurchasable(item)" class="flex items-center gap-4">
-                      <div class="flex items-center gap-3 p-1.5 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                  <!-- Actions - Touch Friendly & Mobile Optimized -->
+                  <div class="flex items-center justify-between pt-2 border-t border-slate-50 dark:border-slate-700/50">
+                    <div v-if="isPurchasable(item)" class="flex items-center gap-4 w-full">
+                      <div class="flex items-center gap-2 p-1 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 shrink-0">
                         <button @click="decreaseQty(item)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black shadow-sm hover:bg-rose-500 hover:text-white dark:hover:bg-rose-500 transition-all active:scale-90 disabled:opacity-30" :disabled="getQty(item.id) === 0">
                           −
                         </button>
-                        <span class="w-8 text-center text-base font-black text-slate-900 dark:text-white">{{ getQty(item.id) }}</span>
+                        <span class="w-6 text-center text-sm font-black text-slate-900 dark:text-white">{{ getQty(item.id) }}</span>
                         <button @click="increaseQty(item)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-black shadow-sm hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 transition-all active:scale-90 disabled:opacity-30" :disabled="getQty(item.id) >= item.stock_count">
                           +
                         </button>
                       </div>
-                      <!-- Stock indicator -->
-                      <span v-if="item.stock_count < 10" class="px-3 py-1.5 bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-black uppercase tracking-widest rounded-xl border border-amber-100 dark:border-amber-900/30 animate-pulse">
-                        🔥 {{ item.stock_count }} left
-                      </span>
+
+                      <!-- Add to Cart Visual Indicator -->
+                      <div v-if="getQty(item.id) > 0" class="flex-1 text-right">
+                        <span class="inline-flex px-3 py-1.5 bg-blue-600 text-white text-[9px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-blue-500/20 animate-bounce">
+                          Added!
+                        </span>
+                      </div>
+                      <div v-else-if="item.stock_count < 10" class="flex-1 text-right">
+                        <span class="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest">
+                          🔥 {{ item.stock_count }} Left
+                        </span>
+                      </div>
                     </div>
-                    <div v-else>
-                      <span class="px-6 py-2.5 bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] rounded-full border border-slate-200 dark:border-slate-800">
+                    <div v-else class="w-full text-center">
+                      <span class="block w-full py-2 bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-500 text-[9px] font-black uppercase tracking-[0.2em] rounded-xl border border-slate-100 dark:border-slate-800">
                         {{ getStatusLabel(item) }}
                       </span>
                     </div>
