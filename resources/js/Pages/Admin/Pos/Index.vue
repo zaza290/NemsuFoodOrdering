@@ -72,8 +72,11 @@
                 <div class="h-48 overflow-hidden relative">
                   <img :src="foodImageSrc(item)" :alt="item.name" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" @error="(e) => e.target.src = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=400&fit=crop&q=80'" />
                   <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
-                  <div v-if="!item.is_available" class="absolute inset-0 flex items-center justify-center bg-slate-900/20 backdrop-blur-[2px]">
+                  <div v-if="item.current_stock === 0" class="absolute inset-0 flex items-center justify-center bg-slate-900/20 backdrop-blur-[2px]">
                     <span class="px-4 py-2 bg-rose-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg">Sold Out</span>
+                  </div>
+                  <div v-else-if="!item.is_available" class="absolute inset-0 flex items-center justify-center bg-slate-900/20 backdrop-blur-[2px]">
+                    <span class="px-4 py-2 bg-slate-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg">Unavailable</span>
                   </div>
                 </div>
 
@@ -82,11 +85,12 @@
                   <div class="mb-4">
                     <h4 class="text-lg font-black text-slate-900 leading-tight group-hover:text-blue-600 transition-colors truncate">{{ item.name }}</h4>
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">₱{{ formatPrice(item.price) }}</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Stock: {{ item.current_stock }}</p>
                   </div>
 
                   <button
                     @click="addToCart(item)"
-                    :disabled="!item.is_available"
+                    :disabled="!item.is_available || item.current_stock <= 0"
                     class="w-full py-3 bg-slate-50 text-slate-900 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-blue-600 hover:text-white transition-all active:scale-95 flex items-center justify-center gap-2 group/btn"
                   >
                     <span class="text-lg group-hover/btn:rotate-90 transition-transform">+</span> Add to Cart
@@ -234,17 +238,17 @@ const menuItems = computed(() => selectedStore.value?.menu_items || [])
 function addToCart(item) {
   const existing = cart.value.find(i => i.id === item.id)
   if (existing) {
-    if (existing.quantity < item.stock_count) existing.quantity++
+    if (existing.quantity < item.current_stock) existing.quantity++
   } else {
-    if (item.stock_count > 0) {
-      cart.value.push({ id: item.id, name: item.name, price: parseFloat(item.price), quantity: 1, stock_count: item.stock_count })
+    if (item.current_stock > 0) {
+      cart.value.push({ id: item.id, name: item.name, price: parseFloat(item.price), quantity: 1, current_stock: item.current_stock })
     }
   }
 }
 
 function changeQty(line, delta) {
   const newQty = line.quantity + delta
-  if (newQty > line.stock_count) return
+  if (newQty > (line.current_stock || 0)) return
   if (newQty <= 0) {
     cart.value = cart.value.filter(i => i.id !== line.id)
   } else {

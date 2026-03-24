@@ -26,13 +26,15 @@ class MenuController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
-            'stock_count' => ['nullable', 'integer', 'min:0'],
-            'expiration_date' => ['nullable', 'date'],
+            'current_stock' => ['nullable', 'integer', 'min:0'],
+            'daily_target_stock' => ['nullable', 'integer', 'min:1'],
             'is_available' => ['nullable', 'boolean'],
         ]);
 
         $data['store_id'] = $store->id;
         $data['is_available'] = $data['is_available'] ?? true;
+        $data['current_stock'] = $data['current_stock'] ?? 0;
+        $data['daily_target_stock'] = $data['daily_target_stock'] ?? 50;
 
         MenuItem::create($data);
 
@@ -47,8 +49,8 @@ class MenuController extends Controller
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'price' => ['sometimes', 'numeric', 'min:0'],
-            'stock_count' => ['sometimes', 'integer', 'min:0'],
-            'expiration_date' => ['sometimes', 'nullable', 'date'],
+            'current_stock' => ['sometimes', 'integer', 'min:0'],
+            'daily_target_stock' => ['sometimes', 'integer', 'min:1'],
             'is_available' => ['sometimes', 'boolean'],
         ]);
 

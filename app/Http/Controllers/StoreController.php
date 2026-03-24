@@ -8,12 +8,7 @@ class StoreController extends Controller
 {
     public function index()
     {
-        $stores = Store::with(['menuItems' => function($q) {
-                $q->where(function ($query) {
-                    $query->whereNull('expiration_date')
-                          ->orWhere('expiration_date', '>=', now()->toDateString());
-                });
-            }])
+        $stores = Store::with(['menuItems'])
             ->withCount('orders')
             ->withAvg('ratings', 'rating')
             ->orderByDesc('is_open')

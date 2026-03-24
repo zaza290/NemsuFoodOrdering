@@ -68,7 +68,7 @@
       </div>
 
       <!-- Low Stock Tracker -->
-      <div class="panel expiration-tracker bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 mb-12 shadow-3d">
+      <div class="panel low-stock-tracker bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 mb-12 shadow-3d">
         <div class="panel-header border-slate-100 dark:border-slate-700">
           <div class="flex flex-col">
             <h3 class="panel-title text-slate-900 dark:text-white">📉 Low Stock Tracker</h3>

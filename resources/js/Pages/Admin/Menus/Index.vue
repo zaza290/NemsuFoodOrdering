@@ -32,11 +32,10 @@
             <div class="menu-item-meta">
               <div class="meta-row">
                 <span class="meta-label">Stock</span>
-                <span class="meta-value">{{ item.stock_count ?? 0 }}</span>
-              </div>
-              <div class="meta-row">
-                <span class="meta-label">Expiry</span>
-                <span class="meta-value">{{ item.expiration_date || '—' }}</span>
+                <span class="meta-value" :class="{ 'text-red-500 font-bold': item.current_stock === 0 }">
+                  {{ item.current_stock ?? 0 }}
+                  <span v-if="item.current_stock === 0"> (Sold Out)</span>
+                </span>
               </div>
             </div>
             <div class="menu-card-actions">
@@ -77,12 +76,12 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Stock Count</label>
-              <input v-model.number="itemForm.stock_count" type="number" min="0" placeholder="0" class="form-input" />
+              <label>Current Stock</label>
+              <input v-model.number="itemForm.current_stock" type="number" min="0" placeholder="0" class="form-input" />
             </div>
             <div class="form-group">
-              <label>Expiration Date</label>
-              <input v-model="itemForm.expiration_date" type="date" class="form-input" />
+              <label>Daily Target Stock</label>
+              <input v-model.number="itemForm.daily_target_stock" type="number" min="1" placeholder="50" class="form-input" />
             </div>
           </div>
           <div class="form-group">
@@ -134,8 +133,8 @@ const itemForm = useForm({
   name: '',
   description: '',
   price: '',
-  stock_count: 0,
-  expiration_date: '',
+  current_stock: 0,
+  daily_target_stock: 50,
   is_available: true,
 })
 
@@ -144,6 +143,8 @@ const openCreateModal = () => {
   itemForm.reset()
   itemForm.store_id = props.store.id
   itemForm.is_available = true
+  itemForm.current_stock = 0
+  itemForm.daily_target_stock = 50
   showModal.value = true
 }
 
@@ -152,8 +153,8 @@ const openEditModal = (item) => {
   itemForm.name = item.name
   itemForm.description = item.description || ''
   itemForm.price = item.price
-  itemForm.stock_count = item.stock_count ?? 0
-  itemForm.expiration_date = item.expiration_date || ''
+  itemForm.current_stock = item.current_stock ?? 0
+  itemForm.daily_target_stock = item.daily_target_stock ?? 50
   itemForm.is_available = item.is_available
   showModal.value = true
 }

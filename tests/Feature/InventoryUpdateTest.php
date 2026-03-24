@@ -23,21 +23,22 @@ class InventoryUpdateTest extends TestCase
             'store_id' => $store->id,
             'name' => 'Test Item',
             'price' => 50,
-            'stock_count' => 10,
+            'current_stock' => 10,
+            'daily_target_stock' => 50,
             'is_available' => true,
         ]);
 
         $this->actingAs($admin)
             ->patch(route('admin.inventory.update', ['menu' => $menu->id]), [
-                'stock_count' => 25,
-                'expiration_date' => now()->addDays(7)->toDateString(),
+                'current_stock' => 25,
+                'daily_target_stock' => 100,
                 'is_available' => false,
             ])
             ->assertStatus(302);
 
         $menu->refresh();
-        $this->assertSame(25, (int) $menu->stock_count);
+        $this->assertSame(25, (int) $menu->current_stock);
+        $this->assertSame(100, (int) $menu->daily_target_stock);
         $this->assertFalse((bool) $menu->is_available);
-        $this->assertNotNull($menu->expiration_date);
     }
 }

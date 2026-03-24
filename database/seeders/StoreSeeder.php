@@ -136,8 +136,8 @@ class StoreSeeder extends Seeder
                     'store_id' => $store->id,
                     'name' => $item['name'],
                     'price' => $item['price'],
-                    'stock_count' => random_int(10, 50),
-                    'expiration_date' => now()->addDays(random_int(3, 14))->toDateString(),
+                    'current_stock' => random_int(10, 50),
+                    'daily_target_stock' => 50,
                     'is_available' => true,
                 ]);
             }

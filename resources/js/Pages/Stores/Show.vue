@@ -103,7 +103,7 @@
                         −
                       </button>
                       <span class="w-4 md:w-6 text-center text-xs md:text-sm font-black text-slate-900 dark:text-white">{{ getQty(item.id) }}</span>
-                      <button @click="increaseQty(item)" class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg md:rounded-xl bg-blue-600 text-white font-black shadow-sm active:scale-90" :disabled="getQty(item.id) >= item.stock_count">
+                      <button @click="increaseQty(item)" class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg md:rounded-xl bg-blue-600 text-white font-black shadow-sm active:scale-90" :disabled="getQty(item.id) >= item.current_stock">
                         +
                       </button>
                     </div>
@@ -310,32 +310,24 @@ const getQty = (id) => {
 
 const isPurchasable = (item) => {
   if (!item.is_available) return false
-  if (item.stock_count <= 0) return false
-  if (item.expiration_date) {
-    const today = new Date().toISOString().split('T')[0]
-    if (item.expiration_date < today) return false
-  }
+  if (item.current_stock <= 0) return false
   return true
 }
 
 const getStatusLabel = (item) => {
   if (!item.is_available) return 'Unavailable'
-  if (item.stock_count <= 0) return 'Sold Out'
-  if (item.expiration_date) {
-    const today = new Date().toISOString().split('T')[0]
-    if (item.expiration_date < today) return 'Expired'
-  }
+  if (item.current_stock <= 0) return 'Sold Out'
   return 'Unavailable'
 }
 
 const increaseQty = (menuItem) => {
   const existing = cart.value.find(i => i.id === menuItem.id)
   if (existing) {
-    if (existing.quantity < menuItem.stock_count) {
+    if (existing.quantity < menuItem.current_stock) {
       existing.quantity++
     }
   } else {
-    if (menuItem.stock_count > 0) {
+    if (menuItem.current_stock > 0) {
       cart.value.push({ id: menuItem.id, name: menuItem.name, price: parseFloat(menuItem.price), quantity: 1 })
     }
   }
